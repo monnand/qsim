@@ -9,10 +9,15 @@ import (
 	"time"
 )
 
+type Distribution struct {
+	Name       string             `json:"type"`
+	Parameters map[string]float64 `json:"parameters,omitempty"`
+}
+
 type SiteSpec struct {
-	Addr   string `json:"addr"`
-	Stime  string `json:"service-time,omitempty"`
-	Qdelay string `json:"queuing-delay,omitempty"`
+	Addr  string        `json:"addr"`
+	Stime string        `json:"service-time,omitempty"`
+	Sdist *Distribution `json:"service-time-distribution,omitempty"`
 }
 
 func (self *SiteSpec) Name() string {
@@ -28,13 +33,8 @@ func sleepAndDelay(duration string) {
 	}
 }
 
-func (self *SiteSpec) String() string {
-	return fmt.Sprintf(" addr: %v\n service-time: %v\n queuing-delay: %v\n", self.Addr, self.Stime, self.Qdelay)
-}
-
 func (self *SiteSpec) DelayBySleeping() {
 	sleepAndDelay(self.Stime)
-	sleepAndDelay(self.Qdelay)
 }
 
 type PathSpec struct {
