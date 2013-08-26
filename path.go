@@ -2,10 +2,12 @@ package main
 
 import (
 	"bytes"
+	"code.google.com/p/probab/dst"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -33,8 +35,29 @@ func sleepAndDelay(duration string) {
 	}
 }
 
+func (self *Distribution) nextRandomNumber() int64 {
+	switch strings.ToLower(self.Name) {
+	case "poisson":
+		lambda := 500.0
+		if l, ok := self.Parameters["lambda"]; ok {
+			lambda = l
+		}
+		return dst.PoissonNext(lambda)
+	}
+	return 0
+}
+
+func (self *Distribution) Sleep() {
+	if self == nil {
+		return
+	}
+	d, _ := time.ParseDuration(fmt.Sprint("%vms", self.nextRandomNumber()))
+	time.Sleep(d)
+}
+
 func (self *SiteSpec) DelayBySleeping() {
 	sleepAndDelay(self.Stime)
+	self.Sdist.Sleep()
 }
 
 type PathSpec struct {
