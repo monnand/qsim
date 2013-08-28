@@ -35,14 +35,14 @@ func sleepAndDelay(duration string) {
 	}
 }
 
-func (self *Distribution) nextRandomNumber() int64 {
+func (self *Distribution) nextRandomNumber() float64 {
 	switch strings.ToLower(self.Name) {
 	case "poisson":
 		lambda := 500.0
 		if l, ok := self.Parameters["lambda"]; ok {
 			lambda = l
 		}
-		return dst.PoissonNext(lambda)
+		return dst.ExponentialNext(lambda)
 	}
 	return 0
 }
@@ -51,7 +51,7 @@ func (self *Distribution) Sleep() {
 	if self == nil {
 		return
 	}
-	d, _ := time.ParseDuration(fmt.Sprint("%vms", self.nextRandomNumber()))
+	d, _ := time.ParseDuration(fmt.Sprint("%vs", self.nextRandomNumber()))
 	time.Sleep(d)
 }
 
